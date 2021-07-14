@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if user %}
+    <h1>Welcome, {{ user.username }}!</h1>
+    {% else %}
+    <h1>Welcome, Guest!</h1>
+    {% endif %}
+
+    {% for ent in entries %}
+    <div><p><b>Team:</b> {{ ent.team }} | <b>Conference:</b> {{ ent.conference }} | <b>Division:</b> {{ ent.division }}</p></div>
+    {% endfor %}
+{% endblock %}
