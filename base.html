@@ -1,0 +1,27 @@
+<style>
+    title {text-align: center;}
+</style>
+<head>
+    <title>Welcome to NHL Prospects</title>
+</head>
+<body>
+    <div>NHL Prospects:
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('login') }}">Login</a>
+    </div>
+    <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+<footer>
+    <hr>
+    <p><i>Game logs taken from various sources</i> <b>[GIVE CREDIT HERE]</b></p>
+</footer>
+</body>

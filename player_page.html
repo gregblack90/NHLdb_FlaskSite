@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+</style>
+<h1>{{ player }}</h1>
+    <hr>
+    {% if no_game_log_data %}
+    <p>No game logs found for this player yet...please be patient</p>
+    {% else %}
+    <table>
+        <tr>
+            <th>Season</th>
+            <th>League</th>
+            <th>Team</th>
+            <th>Opponent</th>
+            <th>Date</th>
+            <th>Goals</th>
+            <th>Assists</th>
+            <th>Points</th>
+            <th>SOG</th>
+            <th>+/-</th>
+            <th>PIM</th>
+        </tr>
+        {% for game in game_log_data %}
+        <tr>
+            <td>{{ game[1] }}</td>
+            <td>{{ game[3] }}</td>
+            <td>{{ game[2] }}</td>
+            <td>{{ game[4] }}</td>
+            <td>{{ game[0] }}</td>
+            <td>{{ game[5] }}</td>
+            <td>{{ game[6] }}</td>
+            <td>{{ game[7] }}</td>
+            <td>{{ game[9] }}</td>
+            <td>{{ game[10] }}</td>
+            <td>{{ game[8] }}</td>
+
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+{% endblock %}
