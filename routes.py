@@ -3,25 +3,53 @@ from app import app
 from app.forms import LoginForm
 from flaskext.mysql import MySQL
 from datetime import date
+from time import sleep
+from collections import OrderedDict
 import dbConfig
 import pymysql
+
+
+# @app.context_processor
+# def get_teams():
+#     print('query get teams')
+#     mysql = MySQL()
+#     app.config['MYSQL_DATABASE_USER'] = dbConfig.dbConfigInfo['user']
+#     app.config['MYSQL_DATABASE_PASSWORD'] = dbConfig.dbConfigInfo['password']
+#     app.config['MYSQL_DATABASE_DB'] = dbConfig.dbConfigInfo['database']
+#     app.config['MYSQL_DATABASE_HOST'] = dbConfig.dbConfigInfo['host']
+#     mysql.init_app(app)
+#     conn = mysql.connect()
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT team FROM teams")
+#     teams = cursor.fetchall()
+#     conn.close()
+#     print('done with get teams')
+#     team_dictionary = {}
+#     for a in teams:
+#         team_dictionary = {}
+#         team_dictionary.setdefault(a[0], []).append("buff")
+#     print(team_dictionary)
+#     for team in team_dictionary:
+#         print(team)
+#     return dict(team_dictionary)
 
 
 @app.route('/')
 @app.route('/index')
 def index():
     mysql = MySQL()
-    app.config['MYSQL_DATABASE_USER'] = 'website'
-    app.config['MYSQL_DATABASE_PASSWORD'] = '123861'
-    app.config['MYSQL_DATABASE_DB'] = 'NHL'
-    app.config['MYSQL_DATABASE_HOST'] = '192.168.1.154'
+    app.config['MYSQL_DATABASE_USER'] = dbConfig.dbConfigInfo['user']
+    app.config['MYSQL_DATABASE_PASSWORD'] = dbConfig.dbConfigInfo['password']
+    app.config['MYSQL_DATABASE_DB'] = dbConfig.dbConfigInfo['database']
+    app.config['MYSQL_DATABASE_HOST'] = dbConfig.dbConfigInfo['host']
     mysql.init_app(app)
     conn = mysql.connect()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM teams")
     entries = cursor.fetchall()
     conn.close()
-    return render_template('index.html', title='Home', entries=entries)
+    return render_template('index.html', title='Home',
+                           entries=entries)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -30,7 +58,8 @@ def login():
     if form.validate_on_submit():
         flash('Login requested for user {}, remember_me={}'.format(form.username.data, form.remember_me.data))
         return redirect(url_for('index'))
-    return render_template('login.html', title='Sign In', form=form)
+    return render_template('login.html', title='Sign In',
+                           form=form)
 
 
 @app.route('/team_page/<team>', methods=['GET', 'POST'])
@@ -71,7 +100,10 @@ def team_page(team):
     # if no prospects exist
     else:
         no_prospects.append('True')
-    return render_template('team_page.html', title=team, team=team, prospects=prospects, no_prospects=no_prospects)
+    return render_template('team_page.html', title=team,
+                           team=team,
+                           prospects=prospects,
+                           no_prospects=no_prospects)
 
 
 @app.route('/player_page/<player>', methods=['GET', 'POST'])
@@ -106,5 +138,20 @@ def player_page(player):
     except pymysql.err.ProgrammingError:
         no_game_log_data.append('True')
     conn.close()
+    # need to format Opponent
+    # add opponent to list
+    opponent_all = []
+    for game in game_log_data:
+        opp = game[4]
+        # get rid of "at "
+        if opp[:3] == "at " or "vs ":
+            opp = opp.replace("at ", "")
+            opp = opp.replace("vs ", "")
+        # capitalize first letter of word in string
+        opp_new = opp.title()
+        opponent_all.append(opp_new)
     return render_template('player_page.html', title=player,
-                           player=player, game_log_data=game_log_data, no_game_log_data=no_game_log_data)
+                           player=player,
+                           game_log_data=game_log_data,
+                           no_game_log_data=no_game_log_data,
+                           opponent_all=opponent_all)
