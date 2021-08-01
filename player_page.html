@@ -1,59 +1,56 @@
 {% extends "base.html" %}
 
-{% block content %}
-<style>
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-}
-
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-
-</style>
+{% block app_content %}
+<div class="container-fluid ro justify-content-center">
 <h1>{{ player }}</h1>
-    <hr>
     {% if no_game_log_data %}
     <p>No game logs found for this player yet...please be patient</p>
     {% else %}
-    <table>
-        <tr>
-            <th>Season</th>
-            <th>League</th>
-            <th>Team</th>
-            <th>Opponent</th>
-            <th>Date</th>
-            <th>Goals</th>
-            <th>Assists</th>
-            <th>Points</th>
-            <th>SOG</th>
-            <th>+/-</th>
-            <th>PIM</th>
-        </tr>
-        {% for game in game_log_data %}
-        <tr>
-            <td>{{ game[1] }}</td>
-            <td>{{ game[3] }}</td>
-            <td>{{ game[2] }}</td>
-            <td>{{ game[4] }}</td>
-            <td>{{ game[0] }}</td>
-            <td>{{ game[5] }}</td>
-            <td>{{ game[6] }}</td>
-            <td>{{ game[7] }}</td>
-            <td>{{ game[9] }}</td>
-            <td>{{ game[10] }}</td>
-            <td>{{ game[8] }}</td>
-
-        </tr>
-        {% endfor %}
+    <div class="table-responsive">
+    <table id="game-log-table"
+           data-toggle="table"
+           data-filter-control="true"
+           data-show-search-clear-button="true"
+           data-sortable="true"
+           data-pagination="true"
+           classes="table-sm"
+           data-show-columns="true"
+           data-show-columns-toggle-all="true"
+           class="mx-auto w-auto">
+        <thead>
+            <tr>
+                <th data-field="season" data-filter-control="select" data-sortable="true">Season</th>
+                <th data-field="league" data-filter-control="select" data-sortable="true">League</th>
+                <th data-field="team" data-filter-control="select" data-sortable="true">Team</th>
+                <th data-field="opp" data-filter-control="select" data-sortable="true">Opponent</th>
+                <th data-field="date" data-filter-control="select" data-sortable="true">Date</th>
+                <th data-field="goals" data-filter-control="select" data-sortable="true">Goals</th>
+                <th data-field="assists" data-filter-control="select" data-sortable="true">Assists</th>
+                <th data-field="points" data-filter-control="select" data-sortable="true">Points</th>
+                <th data-field="sog" data-filter-control="select" data-sortable="true">SOG</th>
+                <th data-field="pm" data-filter-control="select" data-sortable="true">+/-</th>
+                <th data-field="pim" data-filter-control="select" data-sortable="true">PIM</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in game_log_data %}
+            <tr>
+                <td>{{ game[1] }}</td>
+                <td>{{ game[3] }}</td>
+                <td>{{ game[2] }}</td>
+                <td>{{ opponent_all[loop.index - 1] }}</td>
+                <td>{{ game[0] }}</td>
+                <td>{{ game[5] }}</td>
+                <td>{{ game[6] }}</td>
+                <td>{{ game[7] }}</td>
+                <td>{{ game[9] }}</td>
+                <td>{{ game[10] }}</td>
+                <td>{{ game[8] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
     {% endif %}
-
+</div>
+</div>
 {% endblock %}
