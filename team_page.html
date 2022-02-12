@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<div class="container">
-    <h1>{{ team }}</h1>
+
+<h1>{{ team }}</h1>
+
+<div>
     {% if no_prospects %}
     <p>No prospects entered for this team yet...please be patient</p>
     {% else %}

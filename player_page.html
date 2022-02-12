@@ -1,35 +1,47 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<div class="container-fluid ro justify-content-center">
+<div>
 <h1>{{ player }}</h1>
+<h4 style="margin-bottom:-15px">Position: <span style="font-weight:normal">{{player_info[2]}}</span></h4>
+<h4 style="margin-bottom:-15px">Height: <span style="font-weight:normal">{{player_info[3]}}</span></h4>
+<h4 style="margin-bottom:-15px">Weight: <span style="font-weight:normal">{{player_info[4]}}</span></h4>
+<h4 style="margin-bottom:-15px">Age: <span style="font-weight:normal">{{age}}</span></h4>
+<h4 style="margin-bottom:-15px">DOB: <span style="font-weight:normal">{{player_info[5]}}</span></h4>
+<h4>Born: <span style="font-weight:normal">{{player_info[6]}}</span></h4>
+</div>
+
+<div>
+    <select class="dropdown" id="dd">
+        <option value="" selected="selected" onchange="update_chart(this.value)">Select Season</option>
+        {% for season in unique_season %}
+            <option value= {{season}}>{{ season }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div>
+<canvas id="myCanvas" width="400" height="400"></canvas>
+</div>
+
+<div>
     {% if no_game_log_data %}
     <p>No game logs found for this player yet...please be patient</p>
     {% else %}
-    <div class="table-responsive">
-    <table id="game-log-table"
-           data-toggle="table"
-           data-filter-control="true"
-           data-show-search-clear-button="true"
-           data-sortable="true"
-           data-pagination="true"
-           classes="table-sm"
-           data-show-columns="true"
-           data-show-columns-toggle-all="true"
-           class="mx-auto w-auto">
+    <table id="game-log-table">
         <thead>
             <tr>
-                <th data-field="season" data-filter-control="select" data-sortable="true">Season</th>
-                <th data-field="league" data-filter-control="select" data-sortable="true">League</th>
-                <th data-field="team" data-filter-control="select" data-sortable="true">Team</th>
-                <th data-field="opp" data-filter-control="select" data-sortable="true">Opponent</th>
-                <th data-field="date" data-filter-control="select" data-sortable="true">Date</th>
-                <th data-field="goals" data-filter-control="select" data-sortable="true">Goals</th>
-                <th data-field="assists" data-filter-control="select" data-sortable="true">Assists</th>
-                <th data-field="points" data-filter-control="select" data-sortable="true">Points</th>
-                <th data-field="sog" data-filter-control="select" data-sortable="true">SOG</th>
-                <th data-field="pm" data-filter-control="select" data-sortable="true">+/-</th>
-                <th data-field="pim" data-filter-control="select" data-sortable="true">PIM</th>
+                <th>Season</th>
+                <th>League</th>
+                <th>Team</th>
+                <th>Opponent</th>
+                <th>Date</th>
+                <th>Goals</th>
+                <th>Assists</th>
+                <th>Points</th>
+                <th>SOG</th>
+                <th>+/-</th>
+                <th>PIM</th>
             </tr>
         </thead>
         <tbody>
@@ -52,5 +64,52 @@
     </table>
     {% endif %}
 </div>
-</div>
+
+{% block javascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<!--This function updates myCanvas based on selected season from dropdown(id=dd)-->
+<script>
+    document.getElementById("dd").onchange = function(){update_chart()}
+    function update_chart(){
+        var selected_season = document.getElementById("dd").value;
+        var data = '{{ data_dict|tojson }}'
+        var jsonData = JSON.parse(data)
+        var goals = jsonData[selected_season]["Goals"]
+        var assists = jsonData[selected_season]["Assists"]
+        var points = jsonData[selected_season]["Points"]
+        var dates = jsonData[selected_season]["Dates"]
+        var chart = new Chart(document.getElementById("myCanvas"), {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    data: goals,
+                    label: "Goals",
+                    borderColor: "#3e95cd",
+                    fill: false
+                }, {
+                    data: assists,
+                    label: "Assists",
+                    borderColor: "#8e5ea2",
+                    fill: false
+                }, {
+                    data: points,
+                    label: "Points",
+                    borderColor: "#3cba9f",
+                    fill: false
+                }]},
+            options: {
+                title: {
+                display: true,
+                text: selected_season + ': Cumulative Season Totals'
+                },
+                hover: {
+                mode: 'index',
+                intersect: true
+                },}
+            });
+    }
+</script>
+{% endblock javascripts %}
+
 {% endblock %}
